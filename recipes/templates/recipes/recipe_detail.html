@@ -1,0 +1,72 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+
+
+
+    {% block content%}   
+
+        <div class="card my-4" style="max-width: 1080px; ">
+            <div class="row g-0">
+              <div class="col-md-8 " style="width: 100%;">
+                <div class="col-md-4">
+                  <img src="{{ recipe.img.url }}" class="img-fluid rounded-start my-2" alt="...">
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">{{ object.title}}</h5>
+                  <p class="card-text">{{ object.descriprion}}</p>
+                  <h6 class="card-subtitle mb-2 text-muted"> {{ object.author}} </h6>
+                  <p class="card-update"><small class="text-muted">{{ object.updated_at | date:"F d, Y" }}</small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        
+        {% if user.is_authenticated %}
+          {% if recipe.author != user %}
+          <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+          <button class="favorite-toggle" data-recipe-id="{{ recipe.id }}">
+            <span class="star {% if recipe.is_favorite %}filled{% endif %}">&#9733;</span>
+          </button>
+          {% endif %}
+        {% endif %}
+
+          {% block scripts %}
+          <script>
+          document.addEventListener('DOMContentLoaded', function() {
+              const favoriteToggleButtons = document.querySelectorAll('.favorite-toggle');
+              favoriteToggleButtons.forEach(function(button) {
+                  button.addEventListener('click', function() {
+                      const recipeId = this.getAttribute('data-recipe-id');
+                      toggleFavorite(recipeId);
+                  });
+              });
+
+              function toggleFavorite(recipeId) {
+                  fetch(`/recipes/${recipeId}/toggle_favorite/`)
+                      .then(response => response.json())
+                      .then(data => {
+                          if (data.action === 'add') {
+                            console.log('Recipe added to favorites');
+                            button.querySelector('.star').classList.add('filled');
+                          } else if (data.action === 'remove') {
+                            console.log('Recipe removed from favorites');
+                            button.querySelector('.star').classList.remove('filled');
+                          }
+                      })
+                      .catch(error => console.log(error));
+              }
+          });
+          </script>
+          {% endblock %}  
+
+          {% if object.author == user or user.is_staff %}
+          <div class="col-4">
+            <a class="btn btn-outline-info" href="{% url 'recipes-update' object.id %}">Update</a>
+            <a class="btn btn-outline-danger" href="{% url 'recipes-delete' object.id %}">Delete</a>
+          </div>    
+          {% endif %}
+    
+
+    {% endblock content %}
