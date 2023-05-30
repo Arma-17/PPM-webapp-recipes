@@ -1,6 +1,6 @@
 {% extends 'recipes/base.html' %}
 {% load static %}
-
+{% load tz %}
 
 
 
@@ -31,6 +31,28 @@
                 </div>
               </div>
             </div>
+
+            <h6>Comments:</h6>
+            {% for comment in object.comments.all %}
+                <div class="comment">
+                    <p>{{ comment.content }}</p>
+                    <p class="text-muted">by {{ comment.author.username }} on {{ comment.created_at|timezone:"Europe/Rome" }}</p>
+                </div>
+            {% empty %}
+                <p>No comments yet.</p>
+            {% endfor %}
+
+            <!-- Add comment form -->
+            {% if user.is_authenticated %}
+                <form action="{% url 'add-comment' object.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea class="form-control" name="content" placeholder="Add a comment" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
+            {% endif %}    
+
           </div>
           
         
