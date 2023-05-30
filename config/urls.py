@@ -30,7 +30,7 @@ urlpatterns = [
     path('profile/', user_views.profile, name="user-profile"),
     path('my-recipes/', user_views.my_recipes, name="user-recipes"),
     path('favorites/', user_views.favorites, name="user-favorites"),
-     path('toggle-follow/<int:user_id>/', user_views.toggle_follow, name='toggle-follow'),
+    path('toggle-follow/<int:user_id>/', user_views.toggle_follow, name='toggle-follow'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

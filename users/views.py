@@ -1,7 +1,6 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 
 from recipes.models import Recipe
 from . import models 
@@ -53,7 +52,5 @@ def toggle_follow(request, user_id):
     else:
         user_to_follow.followers.add(request.user)
         action = 'follow'
-    response = {
-        'action': action
-    }
-    return JsonResponse(response)
+    user_to_follow.save()  # Save the changes to the user_to_follow object    
+    return redirect(request.META.get('HTTP_REFERER'))

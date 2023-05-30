@@ -20,7 +20,7 @@
                   {% if user.is_authenticated %}
                       {% if user != recipe.author %}
                           {% if user in recipe.author.followers.all %}
-                              <button class="btn btn-success">Following</button>
+                              <a href="{% url 'toggle-follow' recipe.author.pk %}" class="btn btn-success">Following</a>
                           {% else %}
                               <a href="{% url 'toggle-follow' recipe.author.pk %}" class="btn btn-primary">Follow</a>
                           {% endif %}
