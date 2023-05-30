@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your models here.
 class Recipe(models.Model):
@@ -23,7 +24,7 @@ class Recipe(models.Model):
     
 
 
-User = get_user_model()
+
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite_recipes')
