@@ -22,7 +22,15 @@ class Recipe(models.Model):
     def __str__(self):
         return self.title
     
-
+    def average_rating(self):
+        ratings = Rating.objects.filter(recipe=self)
+        if ratings.exists():
+            total_ratings = ratings.count()
+            sum_ratings = ratings.aggregate(models.Sum('rating'))['rating__sum']
+            average = sum_ratings / total_ratings
+            return round(average, 1)
+        else:
+            return None
 
 
 
@@ -42,3 +50,14 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.recipe.title}"    
+    
+class Rating(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+
+    class Meta:
+        unique_together = ('recipe', 'user')
+
+    def __str__(self):
+        return f"Rating {self.rating} by {self.user.username} on {self.recipe.title}"    

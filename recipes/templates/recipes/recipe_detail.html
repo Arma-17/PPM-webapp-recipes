@@ -32,6 +32,36 @@
               </div>
             </div>
 
+            <!-- Rating Section -->
+
+            <div class="average-rating">
+              {% if object.ratings.exists %}
+                  Average Rating: {{ object.average_rating }}
+              {% else %}
+                  No ratings yet.
+              {% endif %}
+          </div>
+
+          {% if user.is_authenticated %}
+            <form id="rating-form" action="{% url 'rate-recipe' object.pk %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="rating">Rate the recipe:</label>
+                <select class="form-control" name="rating" id="rating">
+                  <option value="" {% if not user_rating %}selected{% endif %}>Select rating</option>
+                  <option value="1" {% if user_rating == 1 %}selected{% endif %}>1</option>
+                  <option value="2" {% if user_rating == 2 %}selected{% endif %}>2</option>
+                  <option value="3" {% if user_rating == 3 %}selected{% endif %}>3</option>
+                  <option value="4" {% if user_rating == 4 %}selected{% endif %}>4</option>
+                  <option value="5" {% if user_rating == 5 %}selected{% endif %}>5</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Rating</button>
+            </form>
+          {% endif %}
+
+          <!-- Comments Section -->
+
             <h6>Comments:</h6>
             {% for comment in object.comments.all %}
                 <div class="comment d-flex align-items-center">
@@ -74,7 +104,8 @@
             {% endif %}    
 
           </div>
-          
+        
+        <!-- Favorites Section -->  
         
         {% if user.is_authenticated %}
           {% if recipe.author != user %}

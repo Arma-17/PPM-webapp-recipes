@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 
-from .models import Comment
+from .models import Comment, Rating
 from . import models
 from .models import Recipe
 
@@ -119,3 +119,32 @@ def like_comment(request, comment_id):
         comment.likes.add(user)
 
     return redirect('recipes-detail', pk=comment.recipe.id)
+
+
+
+class RecipeDetailView(DetailView):
+    model = models.Recipe
+    template_name = 'recipes/recipe_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            rating = Rating.objects.filter(recipe=self.object, user=self.request.user).first()
+            context['user_rating'] = rating.rating if rating else None
+        return context
+
+
+@login_required
+def rate_recipe(request, recipe_id):
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    rating_value = int(request.POST.get('rating'))
+
+    # Update existing rating or create a new one
+    rating, created = Rating.objects.update_or_create(recipe=recipe, user=request.user, defaults={'rating': rating_value})
+
+    if created:
+        message = 'Rating added successfully.'
+    else:
+        message = 'Rating updated successfully.'
+
+    return redirect(request.META.get('HTTP_REFERER'))
