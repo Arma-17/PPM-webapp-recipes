@@ -1,14 +1,15 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import HttpResponseForbidden
+
 from .models import Comment
-
-
 from . import models
+from .models import Recipe
 
 # Create your views here.
 def index(request):
@@ -90,8 +91,31 @@ def search_results(request):
 
 @login_required
 def add_comment(request, recipe_id):
-    recipe = models.Recipe.objects.get(id=recipe_id)
+    recipe = get_object_or_404(Recipe, id=recipe_id)
     content = request.POST.get('content')
     comment = Comment(recipe=recipe, author=request.user, content=content)
     comment.save()
     return redirect('recipes-detail', pk=recipe_id)
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    if comment.author == request.user or comment.recipe.author == request.user:
+        recipe_id = comment.recipe.id
+        comment.delete()
+        return redirect('recipes-detail', pk=recipe_id)
+    else:
+        return HttpResponseForbidden()
+
+@login_required
+def like_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    user = request.user
+
+    if user in comment.likes.all():
+        comment.likes.remove(user)
+    else:
+        comment.likes.add(user)
+
+    return redirect('recipes-detail', pk=comment.recipe.id)
