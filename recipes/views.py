@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.generic import ListView,DetailView,CreateView,UpdateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from .models import Comment
 
 
 from . import models
@@ -85,3 +86,12 @@ def search_results(request):
         'recipes': recipes,
     }
     return render(request, 'recipes/search_results.html', context)
+
+
+@login_required
+def add_comment(request, recipe_id):
+    recipe = models.Recipe.objects.get(id=recipe_id)
+    content = request.POST.get('content')
+    comment = Comment(recipe=recipe, author=request.user, content=content)
+    comment.save()
+    return redirect('recipes-detail', pk=recipe_id)
