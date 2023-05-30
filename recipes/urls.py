@@ -18,4 +18,6 @@ urlpatterns = [
     path("recipe/<int:recipe_id>/add-comment/", views.add_comment, name="add-comment"),
     path("comment/<int:comment_id>/delete/", views.delete_comment, name="delete-comment"),
     path("comment/<int:comment_id>/like/", views.like_comment, name="like-comment"),
+
+     path("recipe/<int:recipe_id>/rate/", views.rate_recipe, name="rate-recipe"),
 ]
