@@ -16,6 +16,17 @@
                   <h5 class="card-title">{{ object.title}}</h5>
                   <p class="card-text">{{ object.description}}</p>
                   <h6 class="card-subtitle mb-2 text-muted"> {{ object.author}} </h6>
+
+                  {% if user.is_authenticated %}
+                      {% if user != recipe.author %}
+                          {% if user in recipe.author.followers.all %}
+                              <button class="btn btn-success">Following</button>
+                          {% else %}
+                              <a href="{% url 'toggle-follow' recipe.author.pk %}" class="btn btn-primary">Follow</a>
+                          {% endif %}
+                      {% endif %}
+                  {% endif %}
+
                   <p class="card-update"><small class="text-muted">{{ object.updated_at | date:"F d, Y" }}</small></p>
                 </div>
               </div>

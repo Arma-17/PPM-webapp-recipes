@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 from recipes.models import Recipe
 from . import models 
@@ -21,7 +22,16 @@ def register(request):
 
 @login_required()
 def profile(request):
-    return render(request, 'users/profile.html',{'title':'My Profile'})
+    user = request.user
+    following = user.following.all()
+    followers = user.followers.all()
+    context = {
+        'user': user,
+        'following': following,
+        'followers': followers,
+        'title': 'My Profile'
+    }
+    return render(request, 'users/profile.html', context)
 
 def favorites(request):
     return render(request, 'users/favorites.html',{'title':'Favorites'})
@@ -34,3 +44,16 @@ def my_recipes(request):
     
     return render(request, 'users/my-recipes.html', context)         #TODO change name 
 
+@login_required
+def toggle_follow(request, user_id):
+    user_to_follow = models.UserProfile.objects.get(pk=user_id)
+    if request.user in user_to_follow.followers.all():
+        user_to_follow.followers.remove(request.user)
+        action = 'unfollow'
+    else:
+        user_to_follow.followers.add(request.user)
+        action = 'follow'
+    response = {
+        'action': action
+    }
+    return JsonResponse(response)
