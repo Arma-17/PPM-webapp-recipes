@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponseForbidden
 
-from .models import Comment, Rating
+from .models import Comment, Rating, Favorite
 from . import models
 from .models import Recipe
 
@@ -27,6 +27,15 @@ class RecipeListView(ListView):
 
 class RecipeDetailView(DetailView):
     model=models.Recipe
+    template_name = 'recipes/recipe_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            recipe = self.object
+            favorite = Favorite.objects.filter(user=self.request.user, recipe=recipe).first()
+            context['favorite'] = favorite
+        return context
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = models.Recipe
@@ -70,10 +79,8 @@ def toggle_favorite(request, recipe_id):
     else:
         favorite.delete()
         action = 'remove'
-    response = {
-        'action': action
-    }
-    return JsonResponse(response)
+        
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 def search_results(request):
