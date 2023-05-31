@@ -80,7 +80,7 @@
                             {% if comment.author == user or object.author == user %}
                                 <form action="{% url 'delete-comment' comment.id %}" method="post">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-link">Delete</button>
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
                             {% endif %}
                         {% endif %}
@@ -106,16 +106,51 @@
           </div>
         
         <!-- Favorites Section --> 
-          {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
             {% if user != object.author %}
-              {% if favorite %}
-                <a href="{% url 'toggle-favorite' recipe.id %}" class="btn btn-danger">Remove from Favorites</a>
-              {% else %}
-                <a href="{% url 'toggle-favorite' recipe.id %}" class="btn btn-primary">Add to Favorites</a>
-              {% endif %}
+                {% if favorite %}
+                    <a href="{% url 'toggle-favorite' recipe.id %}" class="favorite-icon"><i class="fa-solid fa-star fas " style="color: #9900ffc0;"></i></a>
+                {% else %}
+                    <a href="{% url 'toggle-favorite' recipe.id %}" class="favorite-icon"><i class="fa-thin fa-star far" style="color: #9900ffc0;"></i></a>
+                {% endif %}
             {% endif %}
-          {% endif %}
-        
+        {% endif %}
+                
+        <script>
+          const starIcons = document.querySelectorAll('.favorite-icon i');
+          starIcons.forEach(starIcon => {
+            starIcon.addEventListener('click', function () {
+              const recipeId = this.parentElement.getAttribute('href').split('/').reverse()[1];
+
+              fetch(`/toggle-favorite/${recipeId}/`)
+                .then(response => response.json())
+                .then(data => {
+                  const isFavorite = data.action === 'add';
+                  starIcon.classList.toggle('fa-solid', isFavorite);
+                  starIcon.classList.toggle('fa-thin', !isFavorite);
+                  // Store favorite status in local storage
+                  localStorage.setItem(`favorite_${recipeId}`, isFavorite);
+                })
+                .catch(error => {
+                  console.error(error);
+                  // Handle error here, e.g., show an alert
+                });
+              
+              // Prevent the default link behavior
+              event.preventDefault();
+            });
+
+            // Retrieve favorite status from local storage
+            const recipeId = starIcon.parentElement.getAttribute('href').split('/').reverse()[1];
+            const isFavorite = localStorage.getItem(`favorite_${recipeId}`);
+            if (isFavorite === 'true') {
+              starIcon.classList.add('fa-solid');
+            } else {
+              starIcon.classList.add('fa-thin');
+            }
+          });
+        </script>
+
         <!-- Update and Delete Section -->  
           {% if object.author == user or user.is_staff %}
           <div class="col-4">

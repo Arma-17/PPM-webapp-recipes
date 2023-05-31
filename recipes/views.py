@@ -80,7 +80,11 @@ def toggle_favorite(request, recipe_id):
         favorite.delete()
         action = 'remove'
         
-    return redirect(request.META.get('HTTP_REFERER'))
+    response_data = {
+        'action': action
+    }
+    
+    return JsonResponse(response_data)
 
 
 def search_results(request):
