@@ -64,7 +64,7 @@
 
             <h6>Comments:</h6>
             {% for comment in object.comments.all %}
-                <div class="comment d-flex align-items-center">
+                <div class="comment d-flex align-items-center ">
                     <div class="comment-content flex-grow-1">
                         <p>{{ comment.content }}</p>
                         <p class="text-muted">by {{ comment.author.username }} on {{ comment.created_at|timezone:"Europe/Rome" }}</p>
@@ -72,10 +72,21 @@
                     <div class="comment-actions ml-3">
                         {% if user.is_authenticated %}
                             {% if comment.author != user %}
-                                <form action="{% url 'like-comment' comment.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-link">Like</button>
-                                </form>
+                            <style>
+                              .btn-link:focus {
+                                  outline: none;
+                                  box-shadow: none;
+                              }
+                          </style>
+                            <div class="d-flex align-items-center">
+                              <p class="text-muted ml-2 mt-3">{{ comment.likes.count }}</p>
+                              <form action="{% url 'like-comment' comment.id %}" method="post">
+                                  {% csrf_token %}
+                                  <button type="submit" class="btn btn-link ">
+                                      <i class="fa-solid fa-thumbs-up" style="color: #005eff;"></i>
+                                  </button>
+                              </form>
+                          </div>
                             {% endif %}
                             {% if comment.author == user or object.author == user %}
                                 <form action="{% url 'delete-comment' comment.id %}" method="post">
@@ -84,7 +95,7 @@
                                 </form>
                             {% endif %}
                         {% endif %}
-                        <p class="text-muted">Likes: {{ comment.likes.count }}</p>
+                        
                     </div>
                 </div>
             {% empty %}
