@@ -107,13 +107,13 @@
         
         <!-- Favorites Section --> 
           {% if user.is_authenticated %}
-          {% if user != object.author %}
-            {% if favorite %}
-              <a href="{% url 'toggle-favorite' object.id %}" class="btn btn-danger">Remove from Favorites</a>
-            {% else %}
-              <a href="{% url 'toggle-favorite' object.id %}" class="btn btn-primary">Add to Favorites</a>
+            {% if user != object.author %}
+              {% if favorite %}
+                <a href="{% url 'toggle-favorite' recipe.id %}" class="btn btn-danger">Remove from Favorites</a>
+              {% else %}
+                <a href="{% url 'toggle-favorite' recipe.id %}" class="btn btn-primary">Add to Favorites</a>
+              {% endif %}
             {% endif %}
-          {% endif %}
           {% endif %}
         
         <!-- Update and Delete Section -->  
