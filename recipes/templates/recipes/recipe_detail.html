@@ -105,46 +105,18 @@
 
           </div>
         
-        <!-- Favorites Section -->  
-        
-        {% if user.is_authenticated %}
-          {% if recipe.author != user %}
-          <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-          <button class="favorite-toggle" data-recipe-id="{{ recipe.id }}">
-            <span class="star {% if recipe.is_favorite %}filled{% endif %}">&#9733;</span>
-          </button>
+        <!-- Favorites Section --> 
+          {% if user.is_authenticated %}
+          {% if user != object.author %}
+            {% if favorite %}
+              <a href="{% url 'toggle-favorite' object.id %}" class="btn btn-danger">Remove from Favorites</a>
+            {% else %}
+              <a href="{% url 'toggle-favorite' object.id %}" class="btn btn-primary">Add to Favorites</a>
+            {% endif %}
           {% endif %}
-        {% endif %}
-
-          {% block scripts %}
-          <script>
-          document.addEventListener('DOMContentLoaded', function() {
-              const favoriteToggleButtons = document.querySelectorAll('.favorite-toggle');
-              favoriteToggleButtons.forEach(function(button) {
-                  button.addEventListener('click', function() {
-                      const recipeId = this.getAttribute('data-recipe-id');
-                      toggleFavorite(recipeId);
-                  });
-              });
-
-              function toggleFavorite(recipeId) {
-                  fetch(`/recipes/${recipeId}/toggle_favorite/`)
-                      .then(response => response.json())
-                      .then(data => {
-                          if (data.action === 'add') {
-                            console.log('Recipe added to favorites');
-                            button.querySelector('.star').classList.add('filled');
-                          } else if (data.action === 'remove') {
-                            console.log('Recipe removed from favorites');
-                            button.querySelector('.star').classList.remove('filled');
-                          }
-                      })
-                      .catch(error => console.log(error));
-              }
-          });
-          </script>
-          {% endblock %}  
-
+          {% endif %}
+        
+        <!-- Update and Delete Section -->  
           {% if object.author == user or user.is_staff %}
           <div class="col-4">
             <a class="btn btn-outline-info" href="{% url 'recipes-update' object.id %}">Update</a>
