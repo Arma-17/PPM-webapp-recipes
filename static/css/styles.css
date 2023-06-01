@@ -1,0 +1,31 @@
+/* :: 8.0 Best Receipe Area */
+.best-receipe-area {
+  position: relative;
+  z-index: 1;
+  padding-bottom: 50px; }
+
+.single-best-receipe-area {
+  position: relative;
+  z-index: 1; }
+  .single-best-receipe-area img {
+    border-bottom: 3px solid #40ba37; }
+  .single-best-receipe-area .receipe-content {
+    padding-top: 20px;
+    text-align: center; }
+    .single-best-receipe-area .receipe-content h5 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      font-weight: 400;
+      -webkit-transition-duration: 500ms;
+      transition-duration: 500ms; }
+      .single-best-receipe-area .receipe-content h5:hover, .single-best-receipe-area .receipe-content h5:focus {
+        color: #40ba37; }
+    .single-best-receipe-area .receipe-content .ratings i {
+      font-size: 11px;
+      color: #fbb710;
+      display: inline-block;
+      padding: 0 1px; }
+      .link-unstyled {
+        text-decoration: none;
+        color: inherit;
+      }
