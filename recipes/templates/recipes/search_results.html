@@ -44,4 +44,12 @@
         </div>
       </div>        
     </section>
+
+    {% if recipes|length == 0 %}
+  <div class="col-12">
+    <div class="alert alert-success mt-4 d-inline-flex align-items-center" role="alert">
+      <p class="mb-0">No search results found.</p>
+    </div>
+  </div>
+{% endif %}
     {% endblock content %}
