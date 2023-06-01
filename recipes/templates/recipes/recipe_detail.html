@@ -47,8 +47,8 @@
               {% csrf_token %}
               <div class="form-group">
                 <label for="rating">Rate the recipe:</label>
-                <select class="form-control" name="rating" id="rating">
-                  <option value="" {% if not user_rating %}selected{% endif %}>Select rating</option>
+                <select class="form-control" name="rating" id="rating" required>
+                  <option value="" {% if not user_rating %}selected{% endif %} disabled>Select rating</option>
                   <option value="1" {% if user_rating == 1 %}selected{% endif %}>1</option>
                   <option value="2" {% if user_rating == 2 %}selected{% endif %}>2</option>
                   <option value="3" {% if user_rating == 3 %}selected{% endif %}>3</option>
