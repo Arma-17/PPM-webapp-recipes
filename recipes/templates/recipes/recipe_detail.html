@@ -60,48 +60,79 @@
             </form>
           {% endif %}
 
-          <!-- Comments Section -->
-
-            <h6>Comments:</h6>
-            {% for comment in object.comments.all %}
-                <div class="comment d-flex align-items-center ">
-                    <div class="comment-content flex-grow-1">
-                        <p>{{ comment.content }}</p>
-                        <p class="text-muted">by {{ comment.author.username }} on {{ comment.created_at|timezone:"Europe/Rome" }}</p>
-                    </div>
-                    <div class="comment-actions ml-3">
-                        {% if user.is_authenticated %}
-                            {% if comment.author != user %}
-                            <style>
-                              .btn-link:focus {
-                                  outline: none;
-                                  box-shadow: none;
-                              }
-                          </style>
-                            <div class="d-flex align-items-center">
-                              <p class="text-muted ml-2 mt-3">{{ comment.likes.count }}</p>
-                              <form action="{% url 'like-comment' comment.id %}" method="post">
-                                  {% csrf_token %}
-                                  <button type="submit" class="btn btn-link ">
-                                      <i class="fa-solid fa-thumbs-up" style="color: #005eff;"></i>
-                                  </button>
-                              </form>
+          <!-- Comments Section-->
+              <section style="background-color: #04741c;">
+                <div class="container my-5 py-5">
+                  <div class="row d-flex justify-content-center">
+                    <div class="col-md-12 col-lg-10">
+                      <div class="card text-dark">
+                        <div class="card-body p-4">
+                          <h4 class="mb-0">Recent comments</h4>
+                          <p class="fw-light mb-4 pb-2">Latest Comments section by users</p>
+                          
+                          {% for comment in object.comments.all %}    
+                          <div class="comment-wrapper">
+                            <div class="d-flex flex-start">
+                              <img class="rounded-circle shadow-1-strong me-3" src="{% static 'img\user.jpg' %}" alt="avatar" width="60" height="60" />
+                              <div>
+                                <h6 class="fw-bold mb-1">{{ comment.author.username }}</h6>
+                                <div class="d-flex align-items-center mb-3">
+                                  <p class="mb-0">
+                                    {{ comment.created_at|date:"F d, Y" }}
+                                  </p>
+                                  {% if user.is_authenticated %}
+                                    {% if comment.author != user %}
+                                      <div class="d-flex align-items-center "  style="margin-left: 15px; margin-top: -15px;">
+                                        <p class="text-muted  ml-2 pt-3 mb-0">{{ comment.likes.count }}</p>
+                                        <form action="{% url 'like-comment' comment.id %}" method="post">
+                                          {% csrf_token %}
+                                          <style>
+                                            .btn-link:focus {
+                                                outline: none;
+                                                box-shadow: none;
+                                            }
+                                        </style>
+                                          <button type="submit" class="btn btn-link pb-0" style=" margin-top: 8px;" >
+                                            <i class="fa-solid fa-thumbs-up " style="color: #005eff;"></i>
+                                          </button>
+                                        </form>
+                                      </div>
+                                    {% endif %}
+                                    {% if comment.author == user or object.author == user %}
+                                    <form action="{% url 'delete-comment' comment.id %}" method="post" style="margin-left: 15px;">
+                                      {% csrf_token %}
+                                      <style>
+                                        .btn-sm:focus {
+                                            outline: none;
+                                            box-shadow: none;
+                                        }
+                                      </style>  
+                                      <button type="submit" class="btn btn-sm p-0">
+                                        <i class="fa-solid fa-trash" style="color: red;"></i>
+                                      </button>
+                                    </form>
+                                    {% endif %}
+                                  {% endif %}
+                                </div>
+                                <p class="mb-3" >
+                                  {{ comment.content }}
+                                </p>
+                              </div>
+                            </div>
+                            <hr class="my-0" style="height: 1px;" />
                           </div>
-                            {% endif %}
-                            {% if comment.author == user or object.author == user %}
-                                <form action="{% url 'delete-comment' comment.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            {% endif %}
-                        {% endif %}
-                        
+                          {% empty %}
+                            <p>No comments yet.</p>
+                          {% endfor %}
+                          
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            {% empty %}
-                <p>No comments yet.</p>
-            {% endfor %}
- 
+              </section>
+              
+
 
             <!-- Add comment form -->
             {% if user.is_authenticated %}
