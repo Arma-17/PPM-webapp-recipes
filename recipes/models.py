@@ -4,6 +4,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+CATEGORY_CHOICES = [
+    ('first', 'First'),
+    ('second', 'Second'),
+    ('side', 'Side'),
+    ('dessert', 'Dessert'),
+]
+
 # Create your models here.
 class Recipe(models.Model):
     title = models.CharField(max_length=100)
@@ -14,6 +21,8 @@ class Recipe(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES,  default='first')
 
 
     def get_absolute_url(self):
