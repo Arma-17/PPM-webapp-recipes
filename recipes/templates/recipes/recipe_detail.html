@@ -170,8 +170,8 @@
 
     <!-- Comments Section-->
     <div class="section-heading text-left">
-      <h3>Leave a comment</h3>
       {% if user.is_authenticated %}
+      <h3>Leave a comment</h3>
         <form action="{% url 'add-comment' object.pk %}" method="post">
           {% csrf_token %}
           <div class="form-group">
