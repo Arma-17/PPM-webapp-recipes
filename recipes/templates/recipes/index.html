@@ -11,14 +11,21 @@
 
 
     {% block content%}
+    {% for category in categories %}
+    <div class="bg-success p-3 mb-3 rounded">
+      <h5 class="text-white">{{ category.1 }}</h5>
+    </div>
     <section class="best-receipe-area">
       <div class="container">
+        
           <div class="row">
     {% for recipe in recipes %}
-    {% if recipe.author != user %}
+
+    {% if recipe.category == category.0 and recipe.author != user %}
+    
     
               <!-- Single Best Receipe Area -->
-              <div class="col-12 col-sm-6 col-lg-4">
+              <div class="col-12 col-sm-6 col-lg-4 d-flex">
                   <div class="single-best-receipe-area mb-30">
                       <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="">
                       <div class="receipe-content">
@@ -38,11 +45,12 @@
                           </div>
                       </div>
                   </div>
-              </div>
-                 
-    {% endif %}    
+              </div>       
+      {% endif %}    
     {% endfor%}
         </div>
+    
       </div>        
     </section>
+    {% endfor %}
     {% endblock content %}

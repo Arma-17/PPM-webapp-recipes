@@ -14,16 +14,20 @@ from .models import Recipe
 # Create your views here.
 def index(request):
     recipes = models.Recipe.objects.all()
-
-    context={
-        'recipes':recipes
-    }
-    return render(request,"recipes/index.html",{'title':'Home'},context)
+    categories = models.CATEGORY_CHOICES
+    return render(request, "recipes/index.html", {'title': 'Home', 'categories': categories, 'recipes': recipes})
 
 class RecipeListView(ListView):
     model=models.Recipe
     template_name='recipes/index.html'
     context_object_name = 'recipes'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Home'
+        context['categories'] = models.CATEGORY_CHOICES
+        return context
+    
 
 class RecipeDetailView(DetailView):
     model=models.Recipe
@@ -39,7 +43,7 @@ class RecipeDetailView(DetailView):
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
     model = models.Recipe
-    fields = ['img', 'title', 'description'] 
+    fields = ['img', 'title', 'description', 'category'] 
 
     def form_valid(self,form):
         form.instance.author = self.request.user
@@ -47,7 +51,7 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
 
 class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
     model = models.Recipe
-    fields = ['img', 'title', 'description']
+    fields = ['img', 'title', 'description', 'category']
 
     def test_func(self):
         recipe = self.get_object()
