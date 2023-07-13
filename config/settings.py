@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'fluffy-baklava-ed86e5.netlify.app/',
+    'ppm-webapp-recipes.vercel.app/',
 ]
 
 # Application definition
