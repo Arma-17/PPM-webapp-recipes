@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-3564.up.railway.app/',
+    'fluffy-baklava-ed86e5.netlify.app/',
 ]
 
 # Application definition
