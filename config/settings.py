@@ -30,8 +30,8 @@ ALLOWED_HOSTS = ['*']
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'ppm-webapp-recipes.vercel.app/',
-    'ppm-webapp-recipes.vercel.app',
+    ' http://ppm-webapp-recipes.vercel.app/',
+    ' http://ppm-webapp-recipes.vercel.app',
 ]
 
 # Application definition
