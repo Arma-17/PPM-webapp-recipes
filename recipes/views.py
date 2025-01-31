@@ -10,6 +10,7 @@ from django.http import HttpResponseForbidden
 from .models import Comment, Rating, Favorite
 from . import models
 from .models import Recipe
+from .forms import RecipeForm, CommentForm, RatingForm
 
 # Create your views here.
 def index(request):
@@ -42,28 +43,24 @@ class RecipeDetailView(DetailView):
         return context
 
 class RecipeCreateView(LoginRequiredMixin, CreateView):
-    model = models.Recipe
-    fields = ['img', 'title', 'description', 'category'] 
+    model = Recipe
+    form_class = RecipeForm
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
-    model = models.Recipe
-    fields = ['img', 'title', 'description', 'category']
+class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Recipe
+    form_class = RecipeForm
 
     def test_func(self):
         recipe = self.get_object()
         return self.request.user == recipe.author
 
     def form_valid(self, form):
-        if not form.cleaned_data.get('img'):
-            form.add_error('img', "L'immagine è obbligatoria.")
-            return self.form_invalid(form)
-        
         form.instance.author = self.request.user
-        return super().form_valid(form) 
+        return super().form_valid(form)
 
 
 class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
