@@ -42,25 +42,35 @@ class RecipeDetailView(DetailView):
             context['favorite'] = favorite
         return context
 
-class RecipeCreateView(LoginRequiredMixin, CreateView):
+class RecipeBaseView(LoginRequiredMixin):
     model = Recipe
-    form_class = RecipeForm
+    fields = ['title', 'description', 'img', 'category']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
 
-class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Recipe
-    form_class = RecipeForm
+        # Ottieni i dati degli ingredienti
+        ingredients = self.request.POST.getlist('ingredient[]')
+        quantities = self.request.POST.getlist('quantity[]')
+        units = self.request.POST.getlist('unit[]')
 
+        # Crea una lista degli ingredienti concatenando gli ingredienti, quantità e unità
+        ingredients_list = []
+        for i in range(len(ingredients)):
+            ingredients_list.append(f"{ingredients[i]}-{quantities[i]}-{units[i]}")
+
+        # Unisci gli ingredienti in una stringa separata da trattini
+        form.instance.ingredients = '; '.join(ingredients_list)
+
+        return super().form_valid(form)        
+
+class RecipeCreateView(RecipeBaseView, CreateView):
+    pass
+
+class RecipeUpdateView(RecipeBaseView, UpdateView):
     def test_func(self):
         recipe = self.get_object()
         return self.request.user == recipe.author
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
 
 
 class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):

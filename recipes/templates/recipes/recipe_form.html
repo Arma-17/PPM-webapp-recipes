@@ -1,22 +1,144 @@
 {% extends 'recipes/base.html' %}
 {% load crispy_forms_filters %}
 
-{% block content%}   
-
+{% block content %}
 <div class="container">
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4 "> Add Recipe </legend>
+            <legend class="border-bottom mb-4">Add Recipe</legend>
             {{ form|crispy }}
         </fieldset>
-        <div class="form-group py-3" >
-            <input class="btn btn-outline-primary" type="submit" value="Save" />
-        </div>  
+
+        <!-- Ingredients section -->
+        <div id="ingredients-container">
+            <div class="ingredient-row row align-items-center">
+                <div class="col-md-3">
+                    <input type="text" name="ingredient[]" class="form-control" placeholder="Ingredient">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="unit[]" class="form-control" placeholder="Unit of Measure">
+                </div>
+                <div class="col-md-3 text-end">
+                    <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add new ingredient button -->
+        <button type="button" id="add-ingredient" class="btn btn-primary">Add Ingredient</button>
+
+        <!-- Submit button -->
+        <div class="form-group py-3">
+            <input class="btn btn-outline-primary" type="submit" value="Save">
+        </div>
     </form>
+
+    <!-- Cancel link -->
     <div class="border-top pt-3">
-        <a href="{% url 'recipes-home' %}">Cancel</a>    
-    </div> 
+        <a href="{% url 'recipes-home' %}">Cancel</a>
+    </div>
 </div>
 
-{% endblock content%}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addIngredientBtn = document.getElementById("add-ingredient");
+        const saveBtn = document.querySelector("input[type='submit']");
+        const container = document.getElementById("ingredients-container");
+
+        function validateInputs() {
+            const rows = document.querySelectorAll(".ingredient-row");
+            let allFilled = true;
+
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll("input");
+                inputs.forEach(input => {
+                    if (input.value.trim() === "") {
+                        allFilled = false;
+                    }
+                });
+            });
+
+            saveBtn.disabled = !allFilled;
+        }
+
+        function checkLastRow() {
+            const lastRow = container.lastElementChild;
+            if (!lastRow) return false;
+
+            const inputs = lastRow.querySelectorAll("input");
+            for (let input of inputs) {
+                if (input.value.trim() === "") {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        addIngredientBtn.disabled = true;
+        saveBtn.disabled = true;
+
+        // Controllo su input esistenti
+        container.addEventListener("input", function() {
+            addIngredientBtn.disabled = !checkLastRow();
+            validateInputs();
+        });
+
+        // Aggiunta nuovo ingrediente
+        addIngredientBtn.addEventListener("click", function() {
+            if (!checkLastRow()) return;
+
+            const newRow = document.createElement("div");
+            newRow.classList.add("ingredient-row", "row", "align-items-center");
+            newRow.innerHTML = `
+                <div class="col-md-3">
+                    <input type="text" name="ingredient[]" class="form-control" placeholder="Ingredient">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="unit[]" class="form-control" placeholder="Unit of Measure">
+                </div>
+                <div class="col-md-3 text-end">
+                    <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+
+            // Disabilita il bottone finché il nuovo input non è completato
+            addIngredientBtn.disabled = true;
+
+            // Aggiungi il listener di rimozione per la nuova riga
+            newRow.querySelector(".remove-ingredient").addEventListener("click", function() {
+                container.removeChild(newRow);
+                validateInputs();
+                addIngredientBtn.disabled = !checkLastRow();
+            });
+
+            // Aggiungi listener per validazione
+            newRow.querySelectorAll("input").forEach(input => {
+                input.addEventListener("input", function() {
+                    addIngredientBtn.disabled = !checkLastRow();
+                    validateInputs();
+                });
+            });
+
+            validateInputs();
+        });
+
+        // Controllo iniziale sugli input già presenti
+        document.querySelectorAll(".ingredient-row input").forEach(input => {
+            input.addEventListener("input", function() {
+                addIngredientBtn.disabled = !checkLastRow();
+                validateInputs();
+            });
+        });
+    });
+</script>
+
+
+{% endblock %}
