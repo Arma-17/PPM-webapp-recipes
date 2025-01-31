@@ -57,10 +57,15 @@ class RecipeUpdateView(LoginRequiredMixin, UserPassesTestMixin,UpdateView):
         recipe = self.get_object()
         return self.request.user == recipe.author
 
-    def form_valid(self,form):
+    def form_valid(self, form):
+        if not form.cleaned_data.get('img'):
+            form.add_error('img', "L'immagine è obbligatoria.")
+            return self.form_invalid(form)
+        
         form.instance.author = self.request.user
-        return super().form_valid(form)
-    
+        return super().form_valid(form) 
+
+
 class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
     model = models.Recipe
     success_url = reverse_lazy('recipes-home')

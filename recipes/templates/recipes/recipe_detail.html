@@ -12,7 +12,11 @@
 
     <!-- Receipe Slider -->
     <div style="display: flex; justify-content: center; align-items: center;">
-      <img src="{{ recipe.img.url }}" class="img-fluid" alt="" style="max-height: 30%; width: 50%;" />
+      {% if recipe.img %}
+        <img src="{{ recipe.img.url }}" class="img-fluid" alt="" style="max-height: 30%; width: 50%;" />
+      {% else %}
+        <img src="/media/images/no_image_available.png" class="img-fluid" alt="" style="max-height: 30%; width: 50%;" />
+      {% endif %}    
     </div>
     
 

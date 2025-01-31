@@ -15,7 +15,7 @@ CATEGORY_CHOICES = [
 class Recipe(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    img = models.ImageField(upload_to = "images/",null=True, blank=True) 
+    img = models.ImageField(upload_to="images/", blank=False, null=False)
 
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 

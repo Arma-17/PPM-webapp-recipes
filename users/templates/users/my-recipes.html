@@ -11,7 +11,11 @@
                     <!-- Single Best Receipe Area -->
               <div class="col-12 col-sm-6 col-lg-4">
                 <div class="single-best-receipe-area mb-30">
-                    <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="">
+                      {% if recipe.img %}
+                        <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="">
+                      {% else %}
+                        <img src="/media/images/no_image_available.png" class="img-thumbnail" alt="">
+                      {% endif %}
                     <div class="receipe-content">
                         <a href="{% url 'recipes-detail' recipe.pk %} " class="link-unstyled">
                             <h5>{{ recipe.title}}</h5>
