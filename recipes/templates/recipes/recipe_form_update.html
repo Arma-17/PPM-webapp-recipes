@@ -1,0 +1,33 @@
+{% extends 'recipes/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ recipe.title }}</h2>
+    <img src="{{ recipe.img.url }}" class="img-fluid" alt="{{ recipe.title }}">
+    <p><strong>Category:</strong> {{ recipe.get_category_display }}</p>
+    <p><strong>Description:</strong> {{ recipe.description }}</p>
+
+    <h4>Ingredients</h4>
+    <ul>
+        <h3>Ingredients</h3>
+<ul>
+        {% for ingredient in ingredient_list %}
+            <li>{{ ingredient.0 }} - {{ ingredient.1 }} {{ ingredient.2 }}</li>
+        {% endfor %}
+</ul>
+    </ul>
+
+    <h4>Steps</h4>
+    <ol>
+        {% for step in step_list %}
+        <li>
+            {{ step.0 }} <!-- Step description -->
+            {% if step.1 != "No Image" %}
+                <br>
+                <img src="{{ step.1 }}" alt="Step Image" width="200">
+            {% endif %}
+        </li>
+    {% endfor %}
+    </ol>
+</div>
+{% endblock %}

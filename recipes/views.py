@@ -6,6 +6,10 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponseForbidden
+from django.core.files.storage import default_storage
+from django.conf import settings
+import os
+
 
 from .models import Comment, Rating, Favorite
 from . import models
@@ -47,8 +51,6 @@ class RecipeBaseView(LoginRequiredMixin):
     fields = ['title', 'description', 'img', 'category']
 
     def form_valid(self, form):
-        form.instance.author = self.request.user
-
         # Ottieni i dati degli ingredienti
         ingredients = self.request.POST.getlist('ingredient[]')
         quantities = self.request.POST.getlist('quantity[]')
@@ -62,12 +64,65 @@ class RecipeBaseView(LoginRequiredMixin):
         # Unisci gli ingredienti in una stringa separata da trattini
         form.instance.ingredients = '; '.join(ingredients_list)
 
-        return super().form_valid(form)        
+        # Gestione dei passaggi
+        step_descriptions = self.request.POST.getlist('step_description[]')
+        step_images = self.request.FILES.getlist('step_image[]')
+
+        steps = []
+        for i, description in enumerate(step_descriptions):
+            image_name = None
+            if i < len(step_images):
+                image = step_images[i]
+                # Genera un nome unico per l'immagine
+                image_name = f"{description.replace(' ', '_')}_{image.name}"
+                # Salva l'immagine nella cartella media/images
+                image_path = default_storage.save(f'recipes/{image_name}', image)
+                # Ottieni il percorso relativo dell'immagine
+                image_url = os.path.join(settings.MEDIA_URL, image_path)
+            else:
+                image_url = "No Image"
+
+            # Aggiungi la descrizione e l'URL dell'immagine per ciascun passo
+            steps.append(f"{description}|{image_url}")
+
+        # Unisci tutti gli step in una stringa separata da ";"
+        form.instance.steps = ";".join(steps)
+
+        # Assegna l'autore alla ricetta (l'utente loggato)
+        form.instance.author = self.request.user
+
+        return super().form_valid(form)
+
+
 
 class RecipeCreateView(RecipeBaseView, CreateView):
     pass
 
 class RecipeUpdateView(RecipeBaseView, UpdateView):
+    template_name = 'recipes/recipe_form_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe = self.object  # Get the current recipe
+
+        # Process Ingredients
+        if recipe.ingredients:
+            context['ingredient_list'] = [
+                ingredient.split("-") for ingredient in recipe.ingredients.split("; ")
+            ]
+        else:
+            context['ingredient_list'] = []
+
+        # Process Steps
+        if recipe.steps:
+            context['step_list'] = [
+                step.split("|") for step in recipe.steps.split(";")
+            ]
+        else:
+            context['step_list'] = []
+
+        return context
+
     def test_func(self):
         recipe = self.get_object()
         return self.request.user == recipe.author

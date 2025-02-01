@@ -4,15 +4,15 @@ from .models import Recipe, Comment, Rating
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ['title', 'description', 'img', 'category', 'ingredients']  # Aggiungi gli altri campi necessari
+        fields = ['title', 'description', 'img', 'category', 'ingredients', 'steps']
 
-    # Metodo per "processare" gli ingredienti
     def clean_ingredients(self):
         ingredients = self.cleaned_data.get('ingredients')
-        if ingredients:
-            # Puoi fare qui una pulizia aggiuntiva se necessario
-            return ingredients
-        return ''
+        return ingredients if ingredients else ''
+
+    def clean_steps(self):
+        steps = self.cleaned_data.get('steps')
+        return steps if steps else ''
 
 class CommentForm(forms.ModelForm):
     class Meta:
