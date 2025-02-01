@@ -1,3 +1,5 @@
+# T O D O di codice
+
 #TODO aggiungere i commenti
 
 #TODO mettere la creazione delle ricette con categoria multi scelta quindi possono essere selezionate più categorie all'interno delle quali la ricetta viene posizionata
@@ -12,3 +14,5 @@
 # Bisogna fare che lo si può rendere pigiabile se ci sono almeno due elementi
 
 #TODO il titolo delle ricette deve trovarsi prima dell'immagine quando siamo in visualizzazione
+
+#TODO la vista del delete è un pochino da rivedere che fa abbastanza rabbrividire

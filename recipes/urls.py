@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 
+
 'app/model_viewtype'
 'recipes/recipe_detail.html'
 
@@ -20,4 +21,6 @@ urlpatterns = [
     path("comment/<int:comment_id>/like/", views.like_comment, name="like-comment"),
 
     path("recipe/<int:recipe_id>/rate/", views.rate_recipe, name="rate-recipe"),
+
+    
 ]

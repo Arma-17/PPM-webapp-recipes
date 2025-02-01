@@ -75,7 +75,7 @@ class RecipeUpdateView(RecipeBaseView, UpdateView):
 
 class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
     model = models.Recipe
-    success_url = reverse_lazy('recipes-home')
+    success_url = reverse_lazy('user-recipes')
 
     def test_func(self):
         recipe = self.get_object()
