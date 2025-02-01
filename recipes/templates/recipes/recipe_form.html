@@ -11,18 +11,14 @@
         </fieldset>
 
         <!-- Ingredients section -->
-        <div id="ingredients-container">
-            
-        </div>
+        <div id="ingredients-container"></div>
 
-        <button type="button" id="add-ingredient" class="btn btn-primary">Add Ingredient</button>
+        <button type="button" id="add-ingredient" class="btn btn-outline-primary mt-2" >Add Ingredient</button>
 
         <!-- Description steps section -->
-        <div id="steps-container" class="mt-4">
-           
-        </div>
+        <div id="steps-container" class="mt-4"></div>
 
-        <button type="button" id="add-step" class="btn btn-primary mt-2">Add Step</button>
+        <button type="button" id="add-step" class="btn btn-outline-primary mt-2">Add Step</button>
 
         <div class="form-group py-3">
             <input class="btn btn-outline-primary" type="submit" value="Save">
@@ -42,31 +38,60 @@
         const stepsContainer = document.getElementById("steps-container");
         const saveBtn = document.querySelector("input[type='submit']");
 
-        // Funzione per validare gli input
-        function validateInputs() {
-            const ingredientRows = document.querySelectorAll(".ingredient-row");
-            let allIngredientsValid = true; // Inizialmente consideriamo che tutti gli ingredienti siano validi
+        function updateRemoveButtons() {
+            const removeIngredientButtons = document.querySelectorAll(".remove-ingredient");
+            const removeStepButtons = document.querySelectorAll(".remove-step");
 
+            removeIngredientButtons.forEach(button => {
+                button.disabled = removeIngredientButtons.length === 1; // Disabilita se c'è solo una riga di ingredienti
+            });
+
+            removeStepButtons.forEach(button => {
+                button.disabled = removeStepButtons.length === 1; // Disabilita se c'è solo una riga di step
+            });
+        }
+
+        function validateInputs() {
+            let allIngredientsValid = true;
+            let allStepsValid = true;
+
+            // Validazione ingredienti
+            const ingredientRows = document.querySelectorAll(".ingredient-row");
             ingredientRows.forEach(row => {
                 const inputs = row.querySelectorAll("input");
-                if (inputs[0].value.trim() === "" || inputs[1].value.trim() === "" || inputs[2].value.trim() === "") {
-                    allIngredientsValid = false; // Se qualche campo è vuoto, settiamo la validità su false
+                const name = inputs[0].value.trim();
+                const quantity = inputs[1].value.trim();
+                const unit = inputs[2].value.trim();
+
+                if (name === "" || quantity === "" || unit === "") {
+                    allIngredientsValid = false;
                 }
             });
 
+            // Validazione step
             const stepRows = document.querySelectorAll(".step-row");
-            let allStepsValid = true; // Inizialmente consideriamo che tutti i passaggi siano validi
-
             stepRows.forEach(row => {
                 const inputs = row.querySelectorAll("input");
-                if (inputs[0].value.trim() === "") { // Se la descrizione del passaggio è vuota
-                    allStepsValid = false; // Settiamo la validità su false
+                const description = inputs[0].value.trim();
+
+                if (description === "") {
+                    allStepsValid = false;
                 }
             });
 
-            // Abilita il pulsante "Save" solo se tutti gli ingredienti e tutti i passaggi sono validi
-            saveBtn.disabled = !(allIngredientsValid && allStepsValid);
+            // Disabilita il pulsante "Add Ingredient" se i campi degli ingredienti non sono compilati
+            addIngredientBtn.disabled = !allIngredientsValid;
+            // Disabilita il pulsante "Add Step" se la descrizione di uno step non è compilata
+            addStepBtn.disabled = stepRows.length === 0 || !stepRows[stepRows.length - 1].querySelector("input").value.trim();
+
+            // Disabilita il pulsante "Save" se ci sono errori in ingredienti o step
+            saveBtn.disabled = !allIngredientsValid || !allStepsValid;
+
+            updateRemoveButtons();
         }
+
+
+        
 
         // Funzione per controllare se l'ultima riga è completa (può essere lasciata vuota per aggiungere nuove righe)
         function checkLastRow(container, isStep=false) {
@@ -85,123 +110,69 @@
             return true;
         }
 
-        // Aggiungi ingredienti iniziali (1 riga)
-        function addInitialIngredients() {
-            for (let i = 0; i < 1; i++) {
-                const newRow = document.createElement("div");
-                newRow.classList.add("ingredient-row", "row", "align-items-center");
-                newRow.innerHTML = `
-                    <div class="col-md-3">
-                        <input type="text" name="ingredient[]" class="form-control" placeholder="Ingredient">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" name="unit[]" class="form-control" placeholder="Unit of Measure">
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
-                    </div>
-                `;
-                ingredientsContainer.appendChild(newRow);
-                newRow.querySelector(".remove-ingredient").addEventListener("click", function() {
-                    ingredientsContainer.removeChild(newRow);
-                    validateInputs();
-                });
-            }
-        }
-
-        // Aggiungi passaggi iniziali (1 riga)
-        function addInitialSteps() {
-            for (let i = 0; i < 1; i++) {
-                const newRow = document.createElement("div");
-                newRow.classList.add("step-row", "row", "align-items-center");
-                newRow.innerHTML = `
-                    <div class="col-md-6">
-                        <input type="text" name="step_description[]" class="form-control" placeholder="Step description" required>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="file" name="step_image[]" class="form-control" accept="image/*">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button type="button" class="btn btn-danger remove-step">Remove</button>
-                    </div>
-                `;
-                stepsContainer.appendChild(newRow);
-                newRow.querySelector(".remove-step").addEventListener("click", function() {
-                    stepsContainer.removeChild(newRow);
-                    validateInputs();
-                });
-            }
-        }
-
         // Aggiungi ingrediente solo se non ci sono già ingredienti (o se l'ultima riga è vuota)
-        addIngredientBtn.disabled = false;
-        addIngredientBtn.addEventListener("click", function() {
-            const rows = ingredientsContainer.querySelectorAll(".ingredient-row");
-            if (rows.length === 0 || checkLastRow(ingredientsContainer)) {
-                const newRow = document.createElement("div");
-                newRow.classList.add("ingredient-row", "row", "align-items-center");
-                newRow.innerHTML = `
-                    <div class="col-md-3">
-                        <input type="text" name="ingredient[]" class="form-control" placeholder="Ingredient">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" name="quantity[]" class="form-control" placeholder="Quantity">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" name="unit[]" class="form-control" placeholder="Unit of Measure">
-                    </div>
-                    <div class="col-md-3 text-end">
-                        <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
-                    </div>
-                `;
-                ingredientsContainer.appendChild(newRow);
-                newRow.querySelector(".remove-ingredient").addEventListener("click", function() {
-                    ingredientsContainer.removeChild(newRow);
-                    validateInputs();
-                });
-                newRow.querySelectorAll("input").forEach(input => {
-                    input.addEventListener("input", function() {
-                        validateInputs();
-                    });
-                });
-                validateInputs();
-            }
-        });
+        function addIngredientRow() {
+            const newRow = document.createElement("div");
+            newRow.classList.add("ingredient-row", "row", "align-items-center");
+            newRow.innerHTML = `
+                <div class="col-md-3">
+                    <input type="text" name="ingredient[]" class="form-control" placeholder="Ingredient" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="quantity[]" class="form-control" placeholder="Quantity" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="unit[]" class="form-control" placeholder="Unit of Measure" required>
+                </div>
+                <div class="col-md-3 text-end">
+                    <button type="button" class="btn btn-danger remove-ingredient">Remove</button>
+                </div>
+            `;
+            ingredientsContainer.appendChild(newRow);
 
-        // Aggiungi passaggio solo se non ci sono già passaggi (o se l'ultima riga è vuota)
-        addStepBtn.disabled = false;
-        addStepBtn.addEventListener("click", function() {
-            const rows = stepsContainer.querySelectorAll(".step-row");
-            if (rows.length === 0 || checkLastRow(stepsContainer, true)) {
-                const newRow = document.createElement("div");
-                newRow.classList.add("step-row", "row", "align-items-center");
-                newRow.innerHTML = `
-                    <div class="col-md-6">
-                        <input type="text" name="step_description[]" class="form-control" placeholder="Step description" required>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="file" name="step_image[]" class="form-control" accept="image/*">
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <button type="button" class="btn btn-danger remove-step">Remove</button>
-                    </div>
-                `;
-                stepsContainer.appendChild(newRow);
-                newRow.querySelector(".remove-step").addEventListener("click", function() {
-                    stepsContainer.removeChild(newRow);
-                    validateInputs();
-                });
-                newRow.querySelectorAll("input").forEach(input => {
-                    input.addEventListener("input", function() {
-                        validateInputs();
-                    });
-                });
+            newRow.querySelector(".remove-ingredient").addEventListener("click", function() {
+                ingredientsContainer.removeChild(newRow);
                 validateInputs();
-            }
-        });
+            });
+
+            newRow.querySelectorAll("input").forEach(input => {
+                input.addEventListener("input", validateInputs);
+            });
+
+            validateInputs();
+        }
+
+        function addStepRow() {
+            const newRow = document.createElement("div");
+            newRow.classList.add("step-row", "row", "align-items-center");
+            newRow.innerHTML = `
+                <div class="col-md-6">
+                    <input type="text" name="step_description[]" class="form-control" placeholder="Step description" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="file" name="step_image[]" class="form-control" accept="image/*">
+                </div>
+                <div class="col-md-2 text-end">
+                    <button type="button" class="btn btn-danger remove-step">Remove</button>
+                </div>
+            `;
+            stepsContainer.appendChild(newRow);
+
+            newRow.querySelector(".remove-step").addEventListener("click", function() {
+                stepsContainer.removeChild(newRow);
+                validateInputs();
+            });
+
+            newRow.querySelectorAll("input").forEach(input => {
+                input.addEventListener("input", validateInputs);
+            });
+
+            validateInputs();
+        }    
+        
+        addIngredientBtn.addEventListener("click", addIngredientRow);
+        addStepBtn.addEventListener("click", addStepRow);
+
 
         // Inizializza controllo su input già presenti
         document.querySelectorAll(".ingredient-row input").forEach(input => {
@@ -215,10 +186,10 @@
                 validateInputs();
             });
         });
+        
+        addStepBtn.click();
+        addIngredientBtn.click();
 
-        // Aggiungi inizialmente 1 riga di ingredienti e passaggi
-        addInitialIngredients();
-        addInitialSteps();
     });
 </script>
 {% endblock %}
