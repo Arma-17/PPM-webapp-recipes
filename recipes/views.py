@@ -57,39 +57,53 @@ class RecipeBaseView(LoginRequiredMixin):
         units = self.request.POST.getlist('unit[]')
 
         # Crea una lista degli ingredienti concatenando gli ingredienti, quantità e unità
-        ingredients_list = []
-        for i in range(len(ingredients)):
-            ingredients_list.append(f"{ingredients[i]}-{quantities[i]}-{units[i]}")
+        ingredients_list = [
+            f"{ingredients[i]}-{quantities[i]}-{units[i]}" for i in range(len(ingredients))
+        ]
 
-        # Unisci gli ingredienti in una stringa separata da trattini
-        form.instance.ingredients = '; '.join(ingredients_list)
+        # Unisci gli ingredienti in una stringa separata da "; "
+        form.instance.ingredients = "; ".join(ingredients_list)
 
         # Gestione dei passaggi
-        step_descriptions = self.request.POST.getlist('step_description[]')
-        step_images = self.request.FILES.getlist('step_image[]')
+        step_descriptions = {
+            int(k.strip("step_description[]")): v
+            for k, v in self.request.POST.items() if k.startswith("step_description[")
+        }
+
+        # Raccogli le immagini con chiavi specifiche come step_image[3]
+        step_images = {
+            int(k.strip("step_image[]")): v
+            for k, v in self.request.FILES.items() if k.startswith("step_image[")
+        }
+
+        default_image_url = os.path.join(settings.MEDIA_URL, 'images/no_image_available.png')
 
         steps = []
-        for i, description in enumerate(step_descriptions):
-            image_name = None
-            if i < len(step_images):
+        for i in sorted(step_descriptions.keys()):  # Ordina per numero di step
+            description = step_descriptions[i]
+
+            if i in step_images:
                 image = step_images[i]
                 # Genera un nome unico per l'immagine
-                image_name = f"{description.replace(' ', '_')}_{image.name}"
-                # Salva l'immagine nella cartella media/images
+                image_name = f"step_{i}_{image.name}"
+                # Salva l'immagine nella cartella media/recipes
                 image_path = default_storage.save(f'recipes/{image_name}', image)
                 # Ottieni il percorso relativo dell'immagine
                 image_url = os.path.join(settings.MEDIA_URL, image_path)
             else:
-                image_url = "No Image"
+                image_url = default_image_url  # Immagine predefinita se non presente
 
             # Aggiungi la descrizione e l'URL dell'immagine per ciascun passo
-            steps.append(f"{description}|{image_url}")
+            steps.append(f"{i}. {description}|{image_url}")
 
         # Unisci tutti gli step in una stringa separata da ";"
         form.instance.steps = ";".join(steps)
 
         # Assegna l'autore alla ricetta (l'utente loggato)
         form.instance.author = self.request.user
+
+        print("Step descriptions:", step_descriptions)
+        print("Step images:", step_images)
 
         return super().form_valid(form)
 
