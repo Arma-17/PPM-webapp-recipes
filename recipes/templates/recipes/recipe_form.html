@@ -142,20 +142,26 @@
             validateInputs();
         }
 
+        let stepCounter = 0; // Contatore per identificare gli step univocamente
+
         function addStepRow() {
+            stepCounter++; // Incrementa il contatore per assegnare un ID univoco
             const newRow = document.createElement("div");
             newRow.classList.add("step-row", "row", "align-items-center");
+            newRow.setAttribute("data-step-id", stepCounter); // Assegna un ID univoco alla riga
+
             newRow.innerHTML = `
                 <div class="col-md-6">
-                    <input type="text" name="step_description[]" class="form-control" placeholder="Step description" required>
+                    <input type="text" name="step_description[${stepCounter}]" class="form-control" placeholder="Step description" required>
                 </div>
                 <div class="col-md-4">
-                    <input type="file" name="step_image[]" class="form-control" accept="image/*">
+                    <input type="file" name="step_image[${stepCounter}]" class="form-control" accept="image/*">
                 </div>
                 <div class="col-md-2 text-end">
                     <button type="button" class="btn btn-danger remove-step">Remove</button>
                 </div>
             `;
+
             stepsContainer.appendChild(newRow);
 
             newRow.querySelector(".remove-step").addEventListener("click", function() {
@@ -168,7 +174,7 @@
             });
 
             validateInputs();
-        }    
+        }
         
         addIngredientBtn.addEventListener("click", addIngredientRow);
         addStepBtn.addEventListener("click", addStepRow);
