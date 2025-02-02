@@ -1,18 +1,59 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
-CATEGORY_CHOICES = [
-    ('first', 'First'),
-    ('second', 'Second'),
-    ('side', 'Side'),
-    ('dessert', 'Dessert'),
-]
 
 # Create your models here.
 class Recipe(models.Model):
+    CATEGORIES = [
+        ('Americano', 'Americano'),
+        ('Fast-food', 'Fast-food'),
+        ('Hamburger', 'Hamburger'),
+        ('Asiatico', 'Asiatico'),
+        ('Barbecue', 'Barbecue'),
+        ('Bevande', 'Bevande'),
+        ('Carne', 'Carne'),
+        ('Cinese', 'Cinese'),
+        ('Colazione', 'Colazione'),
+        ('Dessert', 'Dessert'),
+        ('Dolci', 'Dolci'),
+        ('Frutti di mare', 'Frutti di mare'),
+        ('Gelato', 'Gelato'),
+        ('Giapponese', 'Giapponese'),
+        ('Gourmet', 'Gourmet'),
+        ('Greco', 'Greco'),
+        ('Indiano', 'Indiano'),
+        ('Insalate', 'Insalate'),
+        ('Internazionale', 'Internazionale'),
+        ('Italiano', 'Italiano'),
+        ('Kebab', 'Kebab'),
+        ('Latino-americano', 'Latino-americano'),
+        ('Libanese', 'Libanese'),
+        ('Local food', 'Local food'),
+        ('Mediterraneo', 'Mediterraneo'),
+        ('Mercati locali', 'Mercati locali'),
+        ('Messicano', 'Messicano'),
+        ('Panificio e pasticceria', 'Panificio e pasticceria'),
+        ('Panini', 'Panini'),
+        ('Pasta', 'Pasta'),
+        ('Pesce', 'Pesce'),
+        ('Piadina', 'Piadina'),
+        ('Pizza', 'Pizza'),
+        ('Poke', 'Poke'),
+        ('Pollo', 'Pollo'),
+        ('Sano', 'Sano'),
+        ('Senza glutine', 'Senza glutine'),
+        ('Snack', 'Snack'),
+        ('Sushi', 'Sushi'),
+        ('Tè e caffè', 'Tè e caffè'),
+        ('Thailandese', 'Thailandese'),
+        ('Vegano', 'Vegano'),
+        ('Vegetariano', 'Vegetariano'),
+    ]
+
     title = models.CharField(max_length=100)
     description = models.TextField()
     img = models.ImageField(upload_to="recipes/", blank=False, null=False)
@@ -23,7 +64,8 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='first')
+    # Usa MultiSelectField per le categorie selezionabili
+    categories = MultiSelectField(choices=CATEGORIES, max_length=255, default='Americano')
 
     def get_absolute_url(self):
         return reverse('recipes-detail', kwargs={'pk': self.pk})
@@ -40,7 +82,6 @@ class Recipe(models.Model):
             return round(average, 1)
         else:
             return None
-
 
 
 class Favorite(models.Model):

@@ -7,18 +7,73 @@
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Add Recipe</legend>
-            {{ form|crispy }}
+            
+            <!-- Title field -->
+            <div class="form-group mb-4">
+                <label for="id_title">Title</label>
+                <input type="text" name="title" id="id_title" class="form-control" required>
+            </div>
+
+            <!-- Image field -->
+            <div class="form-group mb-4">
+                <label for="id_img">Image</label>
+                <input type="file" name="img" id="id_img" class="form-control" accept="image/*">
+            </div>
+
+            <!-- Description field -->
+            <div class="form-group mb-4">
+                <label for="id_description">Description</label>
+                <textarea name="description" id="id_description" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <!-- Custom Categories layout -->
+            <div class="form-group">
+                <label for="id_categories">Categories</label>
+                <div class="row">
+                    {% for category in form.categories.field.choices %}
+                    <div class="col-md-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="categories" value="{{ category.0 }}" id="category-{{ category.0 }}"
+                            {% if category.0 in form.categories.value %}checked{% endif %}>
+                            <label class="form-check-label" for="category-{{ category.0 }}">
+                                {{ category.1 }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Renderizza gli altri campi -->
+            <div class="form-group">
+                {{ form.description|crispy }}
+            </div>
+            <div class="form-group">
+                {{ form.ingredients|crispy }}
+            </div>
+            <div class="form-group">
+                {{ form.steps|crispy }}
+            </div>
         </fieldset>
 
-        <!-- Ingredients section -->
-        <div id="ingredients-container"></div>
+        
 
-        <button type="button" id="add-ingredient" class="btn btn-outline-primary mt-2" >Add Ingredient</button>
+        <!-- Ingredients section -->
+        <label class="mt-4" for="id_steps">Ingredients</label>
+        <div>
+            <div id="ingredients-container"></div>
+            <button type="button" id="add-ingredient" class="btn btn-outline-primary mt-2" >Add Ingredient</button> 
+        </div>
+        
 
         <!-- Description steps section -->
-        <div id="steps-container" class="mt-4"></div>
-
-        <button type="button" id="add-step" class="btn btn-outline-primary mt-2">Add Step</button>
+         
+        <label class="mt-4" for="id_steps">Steps</label>
+        <div>
+            <div id="steps-container" ></div>
+            <button type="button" id="add-step" class="btn btn-outline-primary mt-2">Add Step</button> 
+        </div>
+        
 
         <div class="form-group py-3 text-center">
             <input class="btn btn-outline-success" type="submit" value="Save">

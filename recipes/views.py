@@ -19,20 +19,20 @@ from .forms import RecipeForm, CommentForm, RatingForm
 # Create your views here.
 def index(request):
     recipes = models.Recipe.objects.all()
-    categories = models.CATEGORY_CHOICES
+    categories = models.Recipe.CATEGORIES  # Fixed this line
     return render(request, "recipes/index.html", {'title': 'Home', 'categories': categories, 'recipes': recipes})
 
 class RecipeListView(ListView):
-    model=models.Recipe
-    template_name='recipes/index.html'
+    model = models.Recipe
+    template_name = 'recipes/index.html'
     context_object_name = 'recipes'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Home'
-        context['categories'] = models.CATEGORY_CHOICES
+        context['categories'] = models.Recipe.CATEGORIES  # Fixed this line
         return context
-    
+        
 
 class RecipeDetailView(DetailView):
     model=models.Recipe
@@ -48,13 +48,17 @@ class RecipeDetailView(DetailView):
 
 class RecipeBaseView(LoginRequiredMixin):
     model = Recipe
-    fields = ['title', 'description', 'img', 'category']
+    fields = ['title', 'description', 'img', 'categories']
 
     def form_valid(self, form):
         # Ottieni i dati degli ingredienti
         ingredients = self.request.POST.getlist('ingredient[]')
         quantities = self.request.POST.getlist('quantity[]')
         units = self.request.POST.getlist('unit[]')
+
+        # Handle categories (this is automatically handled by Django when using MultiSelectField)
+        selected_categories = self.request.POST.getlist('categories')  # Get selected categories from the form
+        form.instance.categories = ",".join(selected_categories)  # Fix: assign selected categories as a string
 
         # Crea una lista degli ingredienti concatenando gli ingredienti, quantità e unità
         ingredients_list = [
@@ -94,7 +98,7 @@ class RecipeBaseView(LoginRequiredMixin):
                 image_url = default_image_url  # Immagine predefinita se non presente
 
             # Aggiungi la descrizione e l'URL dell'immagine per ciascun passo
-            steps.append(f"{i}. {description}|{image_url}")
+            steps.append(f"{description}|{image_url}")
 
         # Unisci tutti gli step in una stringa separata da ";"
         form.instance.steps = ";".join(steps)
@@ -104,9 +108,9 @@ class RecipeBaseView(LoginRequiredMixin):
 
         print("Step descriptions:", step_descriptions)
         print("Step images:", step_images)
+        print("Steps:", steps)
 
         return super().form_valid(form)
-
 
 
 class RecipeCreateView(RecipeBaseView, CreateView):
