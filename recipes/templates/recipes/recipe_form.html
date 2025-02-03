@@ -82,7 +82,7 @@
         
 
         <div class="form-group py-3 text-center">
-            <input class="btn btn-outline-success" type="button" value="Save" id="openConfirmModal" id="sussy_baka">
+            <input class="btn btn-outline-success" type="button" value="Save" id="openConfirmModal">
         </div>
     </form>
 
@@ -112,8 +112,21 @@
         const addStepBtn = document.getElementById("add-step");
         const ingredientsContainer = document.getElementById("ingredients-container");
         const stepsContainer = document.getElementById("steps-container");
-        const saveBtn = document.getElementById("sussy_baka");
+        const saveBtn = document.getElementById("openConfirmModal");
+        const titleInput = document.getElementById("id_title");
+        const descriptionInput = document.getElementById("id_description");
+        const categoriesInput = document.querySelectorAll('input[name="categories"]');
 
+        let isImageCropped=false
+        
+        //Event listener for title description and categories
+        titleInput.addEventListener("input", validateInputs);
+        descriptionInput.addEventListener("input", validateInputs);
+        categoriesInput.forEach(input => {
+            input.addEventListener("change", validateInputs);
+        });    
+
+        // Update remove buttons
         function updateRemoveButtons() {
             const removeIngredientButtons = document.querySelectorAll(".remove-ingredient");
             const removeStepButtons = document.querySelectorAll(".remove-step");
@@ -127,11 +140,15 @@
             });
         }
 
+        // Validate inputs
         function validateInputs() {
             let allIngredientsValid = true;
             let allStepsValid = true;
+            let isTitleValid = titleInput.value.trim() !== "";
+            let isDescriptionValid = descriptionInput.value.trim() !== "";
+            let areCategoriesValid = Array.from(document.querySelectorAll('input[name="categories"]:checked')).length > 0;
 
-            // Validazione ingredienti
+            // Validate ingredients
             const ingredientRows = document.querySelectorAll(".ingredient-row");
             ingredientRows.forEach(row => {
                 const inputs = row.querySelectorAll("input");
@@ -144,7 +161,7 @@
                 }
             });
 
-            // Validazione step
+            // Validate steps
             const stepRows = document.querySelectorAll(".step-row");
             stepRows.forEach(row => {
                 const inputs = row.querySelectorAll("input");
@@ -160,31 +177,15 @@
             // Disabilita il pulsante "Add Step" se la descrizione di uno step non è compilata
             addStepBtn.disabled = stepRows.length === 0 || !stepRows[stepRows.length - 1].querySelector("input").value.trim();
 
-            // Disabilita il pulsante "Save" se ci sono errori in ingredienti o step
-            saveBtn.disabled = !allIngredientsValid || !allStepsValid;
+            // Disabilita il pulsante "Save" se ci sono errori in ingredienti, step, title, img, description, o categories
+            saveBtn.disabled = !(isTitleValid && isDescriptionValid && areCategoriesValid && allIngredientsValid && allStepsValid && isImageCropped);
 
             updateRemoveButtons();
         }
-
+        
+    
 
         
-
-        // Funzione per controllare se l'ultima riga è completa (può essere lasciata vuota per aggiungere nuove righe)
-        function checkLastRow(container, isStep=false) {
-            const lastRow = container.lastElementChild;
-            if (!lastRow) return true; // Permette l'aggiunta di nuove righe quando il contenitore è vuoto
-
-            const inputs = lastRow.querySelectorAll("input");
-            if (isStep) {
-                return inputs[0].value.trim() !== ""; // Passaggio non vuoto
-            }
-            for (let input of inputs) {
-                if (input.value.trim() === "") {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         // Aggiungi ingrediente solo se non ci sono già ingredienti (o se l'ultima riga è vuota)
         function addIngredientRow() {
@@ -296,7 +297,8 @@
                         previewImage.style.display = "block";  // Show image
                         cropButton.style.display = "block";    // Show crop button
                         console.log("Image loaded!"); // Debugging line
-
+                        isImageCropped=false;
+                        validateInputs();
                         // Destroy previous Cropper instance if it exists
                         if (cropper) {
                             cropper.destroy();
@@ -325,6 +327,8 @@
                     let croppedImage = croppedCanvas.toDataURL("image/png");
                     croppedImageData.value = croppedImage;
                     console.log("Image cropped!"); // Debugging line
+                    isImageCropped=true;
+                    validateInputs();
                 } else {
                     console.error("Cropper is not initialized yet!");
                 }
@@ -332,24 +336,26 @@
         };
 
     cropping_the_shit_out_of_images()
-
+    validateInputs()
 
     
-        let saveButton = document.getElementById("openConfirmModal");
-        let confirmButton = document.getElementById("confirmSaveButton");
-        let modal = new bootstrap.Modal(document.getElementById("confirmSaveModal"));
-        let form = document.querySelector("form");
+    let saveButton = document.getElementById("openConfirmModal");
+    let confirmButton = document.getElementById("confirmSaveButton");
+    let modal = new bootstrap.Modal(document.getElementById("confirmSaveModal"));
+    let form = document.querySelector("form");
 
-        saveButton.addEventListener("click", function () {
-            modal.show();
-        });
+    saveButton.addEventListener("click", function () {
+        modal.show();
+    });
 
-        confirmButton.addEventListener("click", function () {
-            modal.hide();
-            form.submit();
-        });
+    confirmButton.addEventListener("click", function () {
+        modal.hide();
+        form.submit();
+    });
     
-        
+
+    
+    
 });
 
 
