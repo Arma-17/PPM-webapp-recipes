@@ -19,9 +19,11 @@
                 <label for="id_img">Image*</label>
                 <input type="file" id="id_img" class="form-control" accept="image/*">
                 <img id="previewImage" style="max-width: 100%; display: none;">
-                <button type="button" id="cropButton" style="display: none;">Crop Image</button>
+                <button type="button" id="cropButton" style="display: none; margin-top: 10px; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Crop Image</button>
                 <input type="hidden" name="cropped_image" id="croppedImageData">
+                <p id="cropMessage" style="color: green; display: none;">Image successfully cropped!</p>
             </div>
+
 
             
     
@@ -349,10 +351,30 @@
                     console.error("Cropper is not initialized yet!");
                 }
             });
+
+            // Add event listeners to show/hide the crop message
+            let cropMessage = document.getElementById("cropMessage");
+
+            imageInput.addEventListener("change", function() {
+                cropMessage.style.display = "none"; // Hide message when a new image is added
+            });
+
+            previewImage.addEventListener("crop", function() {
+                cropMessage.style.display = "none"; // Hide message when the image changes
+            });
+
+            cropButton.addEventListener("click", function() {
+                cropMessage.style.display = "block"; // Show message when cropping is done
+            });
+
+
         };
 
-    cropping_the_shit_out_of_images()
-    validateInputs()
+    cropping_the_shit_out_of_images();
+    validateInputs();
+
+
+
 
     
     let saveButton = document.getElementById("openConfirmModal");
