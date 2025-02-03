@@ -9,42 +9,57 @@
 {% endblock %}
 
 {% block content %}
-  {% for category in categories %}
-    <div class="bg-success p-3 mb-3 rounded">
-      <h5 class="text-white">{{ category.1 }}</h5>
-    </div>
-    <section class="best-receipe-area">
-      <div class="container">
-        <div class="row">
-          {% for recipe in recipes %}
-            {% if category.0 in recipe.categories and recipe.author != user %}
-              <!-- Single Best Recipe Area -->
-              <div class="col-12 col-sm-6 col-lg-4 d-flex">
-                <div class="single-best-receipe-area mb-30">
-                  {% if recipe.img %}
-                    <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="">
-                  {% else %}
-                    <img src="/media/images/no_image_available.png" class="img-thumbnail" alt="">
-                  {% endif %}
-                  <div class="receipe-content">
-                    <a href="{% url 'recipes-detail' recipe.pk %}" class="link-unstyled">
-                      <h5>{{ recipe.title }}</h5>
-                    </a>
-                    <h6>By {{ recipe.author }}</h6>
-                    <div class="average-rating">
-                      {% if recipe.ratings.exists %}
-                        {{ recipe.average_rating }} <i class="fa-solid fa-star fa-bounce" style="color: #f3f708;"></i>
-                      {% else %}
-                        No ratings yet.
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>       
-            {% endif %}
-          {% endfor %}
+<section class="new-entry-recipe-area">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="bg-success p-3 mb-3 rounded">
+          <h5 class="text-white">New Entries</h5>
         </div>
       </div>
-    </section>
-  {% endfor %}
+
+      {% for recipe in page_obj %}
+        <div class="col-12 col-sm-6 col-lg-4 d-flex">
+          <div class="single-best-receipe-area mb-30">
+            {% if recipe.img %}
+              <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="{{ recipe.title }}">
+            {% else %}
+              <img src="/media/images/no_image_available.png" class="img-thumbnail" alt="{{ recipe.title }}">
+            {% endif %}
+            <div class="receipe-content">
+              <a href="{% url 'recipes-detail' recipe.pk %}" class="link-unstyled">
+                <h5>{{ recipe.title }}</h5>
+              </a>
+              <h6>By {{ recipe.author }}</h6>
+              <div class="average-rating">
+                {% if recipe.ratings.exists %}
+                  {{ recipe.average_rating }} <i class="fa-solid fa-star fa-bounce" style="color: #f3f708;"></i>
+                {% else %}
+                  No ratings yet.
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Pagination Controls -->
+    <div class="pagination">
+      <span class="page-links">
+        {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; First</a>
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        
+        <span class="current-page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  </div>
+</section>
 {% endblock content %}

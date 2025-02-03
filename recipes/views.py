@@ -11,6 +11,7 @@ from django.conf import settings
 import os
 import base64
 from django.core.files.base import ContentFile
+from django.core.paginator import Paginator
 
 
 from .models import Comment, Rating, Favorite
@@ -22,18 +23,30 @@ from .forms import RecipeForm, CommentForm, RatingForm
 def index(request):
     recipes = models.Recipe.objects.all()
     categories = models.Recipe.CATEGORIES  # Fixed this line
-    return render(request, "recipes/index.html", {'title': 'Home', 'categories': categories, 'recipes': recipes})
+
+    # Set up pagination
+    paginator = Paginator(recipes, 10)  # Show 10 recipes per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "recipes/index.html", {'title': 'Home', 'categories': categories, 'recipes': page_obj})
+
 
 class RecipeListView(ListView):
     model = models.Recipe
     template_name = 'recipes/index.html'
     context_object_name = 'recipes'
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Home'
         context['categories'] = models.Recipe.CATEGORIES  # Fixed this line
         return context
+        
+    def get_queryset(self):
+        # You can customize this queryset to filter or order recipes
+        return models.Recipe.objects.all().order_by('-created_at')    
         
 
 class RecipeDetailView(DetailView):
