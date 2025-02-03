@@ -121,6 +121,7 @@ class RecipeBaseView(LoginRequiredMixin):
         return super().form_valid(form)
 
 
+
 class RecipeCreateView(RecipeBaseView, CreateView):
     pass
 
