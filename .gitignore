@@ -1,0 +1,13 @@
+# Python
+*.pyc
+__pycache__/
+.venv/
+env/
+
+# VS Code
+.vscode/
+
+# Django
+db.sqlite3
+/media/recipes/
+/static/
