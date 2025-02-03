@@ -10,13 +10,13 @@
             
             <!-- Title field -->
             <div class="form-group mb-4">
-                <label for="id_title">Title</label>
+                <label for="id_title">Title*</label>
                 <input type="text" name="title" id="id_title" class="form-control" required>
             </div>
             
             <!-- Image field -->
             <div class="form-group mb-4">
-                <label for="id_img">Image</label>
+                <label for="id_img">Image*</label>
                 <input type="file" id="id_img" class="form-control" accept="image/*">
                 <img id="previewImage" style="max-width: 100%; display: none;">
                 <button type="button" id="cropButton" style="display: none;">Crop Image</button>
@@ -28,13 +28,13 @@
 
             <!-- Description field -->
             <div class="form-group mb-4">
-                <label for="id_description">Description</label>
+                <label for="id_description">Description*</label>
                 <textarea name="description" id="id_description" class="form-control" rows="4" required></textarea>
             </div>
 
             <!-- Custom Categories layout -->
             <div class="form-group">
-                <label for="id_categories">Categories</label>
+                <label for="id_categories">Categories*</label>
                 <div class="row">
                     {% for category in form.categories.field.choices %}
                     <div class="col-md-2">
@@ -62,10 +62,16 @@
             </div>
         </fieldset>
 
+        <!-- Servings field -->
+        <div class="form-group">
+            <label for="id_servings">Servings*</label>
+            <input type="number" class="form-control" id="id_servings" name="servings" value="{{ form.servings.value|default:'' }}" required style="width: 80px;">
+        </div>
+        
         
 
         <!-- Ingredients section -->
-        <label class="mt-4" for="id_steps">Ingredients</label>
+        <label class="mt-4" for="id_steps">Ingredients*</label>
         <div>
             <div id="ingredients-container"></div>
             <button type="button" id="add-ingredient" class="btn btn-outline-primary mt-2" >Add Ingredient</button> 
@@ -74,7 +80,7 @@
 
         <!-- Description steps section -->
          
-        <label class="mt-4" for="id_steps">Steps</label>
+        <label class="mt-4" for="id_steps">Steps*</label>
         <div>
             <div id="steps-container" ></div>
             <button type="button" id="add-step" class="btn btn-outline-primary mt-2">Add Step</button> 
@@ -116,12 +122,14 @@
         const titleInput = document.getElementById("id_title");
         const descriptionInput = document.getElementById("id_description");
         const categoriesInput = document.querySelectorAll('input[name="categories"]');
+        const servingsInput = document.getElementById("id_servings");
 
         let isImageCropped=false
         
         //Event listener for title description and categories
         titleInput.addEventListener("input", validateInputs);
         descriptionInput.addEventListener("input", validateInputs);
+        servingsInput.addEventListener("input", validateInputs);
         categoriesInput.forEach(input => {
             input.addEventListener("change", validateInputs);
         });    
@@ -146,6 +154,7 @@
             let allStepsValid = true;
             let isTitleValid = titleInput.value.trim() !== "";
             let isDescriptionValid = descriptionInput.value.trim() !== "";
+            let isServingsValid = servingsInput.value.trim() !== "";
             let areCategoriesValid = Array.from(document.querySelectorAll('input[name="categories"]:checked')).length > 0;
 
             // Validate ingredients
@@ -164,7 +173,7 @@
             // Validate steps
             const stepRows = document.querySelectorAll(".step-row");
             stepRows.forEach(row => {
-                const inputs = row.querySelectorAll("input");
+                const inputs = row.querySelectorAll("textarea");
                 const description = inputs[0].value.trim();
 
                 if (description === "") {
@@ -175,10 +184,10 @@
             // Disabilita il pulsante "Add Ingredient" se i campi degli ingredienti non sono compilati
             addIngredientBtn.disabled = !allIngredientsValid;
             // Disabilita il pulsante "Add Step" se la descrizione di uno step non è compilata
-            addStepBtn.disabled = stepRows.length === 0 || !stepRows[stepRows.length - 1].querySelector("input").value.trim();
+            addStepBtn.disabled = stepRows.length === 0 || !stepRows[stepRows.length - 1].querySelector("textarea").value.trim();
 
             // Disabilita il pulsante "Save" se ci sono errori in ingredienti, step, title, img, description, o categories
-            saveBtn.disabled = !(isTitleValid && isDescriptionValid && areCategoriesValid && allIngredientsValid && allStepsValid && isImageCropped);
+            saveBtn.disabled = !(isTitleValid && isDescriptionValid && areCategoriesValid && allIngredientsValid && allStepsValid && isImageCropped && isServingsValid);
 
             updateRemoveButtons();
         }
@@ -229,7 +238,7 @@
 
             newRow.innerHTML = `
                 <div class="col-md-6">
-                    <input type="text" name="step_description[${stepCounter}]" class="form-control" placeholder="Step description" required>
+                    <textarea name="step_description[${stepCounter}]" class="form-control step-description" placeholder="Step description" rows="3" required></textarea>
                 </div>
                 <div class="col-md-4">
                     <input type="file" name="step_image[${stepCounter}]" class="form-control" accept="image/*">
@@ -241,12 +250,19 @@
 
             stepsContainer.appendChild(newRow);
 
+            // Make the textarea dynamically resize based on content
+            const textarea = newRow.querySelector("textarea");
+            textarea.addEventListener("input", () => {
+                textarea.style.height = "auto";  // Reset the height
+                textarea.style.height = `${textarea.scrollHeight}px`; // Adjust the height based on content
+            });
+
             newRow.querySelector(".remove-step").addEventListener("click", function() {
                 stepsContainer.removeChild(newRow);
                 validateInputs();
             });
 
-            newRow.querySelectorAll("input").forEach(input => {
+            newRow.querySelectorAll("textarea").forEach(input => {
                 input.addEventListener("input", validateInputs);
             });
 

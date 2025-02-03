@@ -60,6 +60,8 @@ class Recipe(models.Model):
     ingredients = models.TextField(blank=False, default='')    
     steps = models.TextField(blank=True, default='')  # Nuovo campo per i passaggi
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    servings = models.IntegerField(default=1)  
+
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

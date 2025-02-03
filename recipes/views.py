@@ -25,7 +25,7 @@ def index(request):
     categories = models.Recipe.CATEGORIES  # Fixed this line
 
     # Set up pagination
-    paginator = Paginator(recipes, 10)  # Show 10 recipes per page
+    paginator = Paginator(recipes, 9)  # Show 10 recipes per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -36,14 +36,14 @@ class RecipeListView(ListView):
     model = models.Recipe
     template_name = 'recipes/index.html'
     context_object_name = 'recipes'
-    paginate_by = 10
+    paginate_by = 9
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Home'
         context['categories'] = models.Recipe.CATEGORIES  # Fixed this line
         return context
-        
+
     def get_queryset(self):
         # You can customize this queryset to filter or order recipes
         return models.Recipe.objects.all().order_by('-created_at')    
@@ -70,6 +70,8 @@ class RecipeBaseView(LoginRequiredMixin):
         ingredients = self.request.POST.getlist('ingredient[]')
         quantities = self.request.POST.getlist('quantity[]')
         units = self.request.POST.getlist('unit[]')
+        form.instance.servings = self.request.POST.get('servings')  # Capture the value
+
 
         cropped_image_data = self.request.POST.get("cropped_image")
         if cropped_image_data:

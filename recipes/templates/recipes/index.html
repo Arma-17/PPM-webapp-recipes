@@ -13,35 +13,38 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <div class="bg-success p-3 mb-3 rounded">
+        <div class="p-3 mb-3 rounded" style="background-image: url('{{ recipe.image.url }}'); background-repeat: repeat; background-size: auto;">
           <h5 class="text-white">New Entries</h5>
-        </div>
+        </div>      
       </div>
 
-      {% for recipe in page_obj %}
-        <div class="col-12 col-sm-6 col-lg-4 d-flex">
-          <div class="single-best-receipe-area mb-30">
-            {% if recipe.img %}
-              <img src="{{ recipe.img.url }}" class="img-thumbnail" alt="{{ recipe.title }}">
-            {% else %}
-              <img src="/media/images/no_image_available.png" class="img-thumbnail" alt="{{ recipe.title }}">
-            {% endif %}
-            <div class="receipe-content">
-              <a href="{% url 'recipes-detail' recipe.pk %}" class="link-unstyled">
-                <h5>{{ recipe.title }}</h5>
-              </a>
-              <h6>By {{ recipe.author }}</h6>
-              <div class="average-rating">
-                {% if recipe.ratings.exists %}
-                  {{ recipe.average_rating }} <i class="fa-solid fa-star fa-bounce" style="color: #f3f708;"></i>
+    {% for recipe in page_obj %}
+        <div class="col-12 col-sm-6 col-lg-4 d-flex h-100 p-3">
+            <div class="single-best-receipe-area p-3 border flex-grow-1">
+            <div class="ratio ratio-1x1"> <!-- Set fixed aspect ratio of 1:1 (square) -->
+                {% if recipe.img %}
+                <img src="{{ recipe.img.url }}" class="img-fluid object-fit-cover" alt="{{ recipe.title }}">
                 {% else %}
-                  No ratings yet.
+                <img src="/media/images/no_image_available.png" class="img-fluid object-fit-cover" alt="{{ recipe.title }}">
                 {% endif %}
-              </div>
             </div>
-          </div>
+            <div class="receipe-content border p-1">
+                <a href="{% url 'recipes-detail' recipe.pk %}" class="link-unstyled">
+                <h5>{{ recipe.title }}</h5>
+                </a>
+                <h6>By {{ recipe.author }}</h6>
+                <div class="average-rating">
+                {% if recipe.ratings.exists %}
+                    {{ recipe.average_rating }} <i class="fa-solid fa-star fa-bounce" style="color: #f3f708;"></i>
+                {% else %}
+                    No ratings yet.
+                {% endif %}
+                </div>
+            </div>
+            </div>
         </div>
-      {% endfor %}
+    {% endfor %}
+
     </div>
     
     <!-- Pagination Controls -->

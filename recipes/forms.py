@@ -4,7 +4,7 @@ from .models import Recipe, Comment, Rating
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ['title', 'description', 'img', 'categories', 'ingredients', 'steps']
+        fields = ['title', 'description', 'img', 'categories', 'ingredients','servings', 'steps']
 
     def clean_ingredients(self):
         ingredients = self.cleaned_data.get('ingredients')

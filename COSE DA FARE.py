@@ -25,3 +25,4 @@
 #TODO asistemare le categorienell'hatml dell'update, non vengono visualizzate
 #TODO aggiungere per quante persone è il prodotto con 
 #todo mettere una sicura per il pulsante save quando aggiungi la ricetta
+#TODO mettere un elemento che mostri che il pulsante crop image è stato cliccato, nell' add recipe
