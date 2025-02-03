@@ -9,6 +9,8 @@ from django.http import HttpResponseForbidden
 from django.core.files.storage import default_storage
 from django.conf import settings
 import os
+import base64
+from django.core.files.base import ContentFile
 
 
 from .models import Comment, Rating, Favorite
@@ -48,7 +50,7 @@ class RecipeDetailView(DetailView):
 
 class RecipeBaseView(LoginRequiredMixin):
     model = Recipe
-    fields = ['title', 'description', 'img', 'categories']
+    fields = ['title', 'description', 'categories']
 
     def form_valid(self, form):
         # Ottieni i dati degli ingredienti
@@ -56,9 +58,15 @@ class RecipeBaseView(LoginRequiredMixin):
         quantities = self.request.POST.getlist('quantity[]')
         units = self.request.POST.getlist('unit[]')
 
-        # Handle categories (this is automatically handled by Django when using MultiSelectField)
-        selected_categories = self.request.POST.getlist('categories')  # Get selected categories from the form
-        form.instance.categories = ",".join(selected_categories)  # Fix: assign selected categories as a string
+        cropped_image_data = self.request.POST.get("cropped_image")
+        if cropped_image_data:
+            format, imgstr = cropped_image_data.split(';base64,')
+            ext = format.split('/')[-1]
+            image_data = ContentFile(base64.b64decode(imgstr), name=f"recipe_image.{ext}")
+            form.instance.img = image_data
+            # Handle categories (this is automatically handled by Django when using MultiSelectField)
+            selected_categories = self.request.POST.getlist('categories')  # Get selected categories from the form
+            form.instance.categories = ",".join(selected_categories)  # Fix: assign selected categories as a string
 
         # Crea una lista degli ingredienti concatenando gli ingredienti, quantità e unità
         ingredients_list = [

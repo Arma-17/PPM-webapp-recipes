@@ -22,3 +22,6 @@
 #TODO la vista del delete è un pochino da rivedere che fa abbastanza rabbrividire
 
 #TODO modificare la dimenione della casella di testo negli step e rimuovere description
+#TODO asistemare le categorienell'hatml dell'update, non vengono visualizzate
+#TODO aggiungere per quante persone è il prodotto con 
+#todo mettere una sicura per il pulsante save quando aggiungi la ricetta
