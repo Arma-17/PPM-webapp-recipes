@@ -49,18 +49,6 @@ class RecipeListView(ListView):
         return models.Recipe.objects.all().order_by('-created_at')    
         
 
-class RecipeDetailView(DetailView):
-    model=models.Recipe
-    template_name = 'recipes/recipe_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            recipe = self.object
-            favorite = Favorite.objects.filter(user=self.request.user, recipe=recipe).first()
-            context['favorite'] = favorite
-        return context
-
 class RecipeBaseView(LoginRequiredMixin):
     model = Recipe
     fields = ['title', 'description', 'categories']
@@ -256,9 +244,40 @@ class RecipeDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+            # Get the user rating
             rating = Rating.objects.filter(recipe=self.object, user=self.request.user).first()
             context['user_rating'] = rating.rating if rating else None
+
+            # Get the user's favorite for the recipe
+            favorite = Favorite.objects.filter(user=self.request.user, recipe=self.object).first()
+            context['favorite'] = favorite
+
+        # Split ingredients: first by "; ", then by "-" (ingredient, quantity, unit)
+        if self.object.ingredients:
+            context['ingredients'] = [
+                ingredient.split('-') for ingredient in self.object.ingredients.split('; ')
+            ]
+        else:
+            context['ingredients'] = []
+
+        # Process steps: split by ";" and then by "|"
+        if self.object.steps:
+            context['steps'] = [
+                step.split('|') for step in self.object.steps.split(';')
+            ]
+        else:
+            context['steps'] = []
+            
+        context['servings'] = self.object.servings
+        context['categories'] = list(self.object.categories) if self.object.categories else []
+
         return context
+
+
+
+
+
+
 
 
 @login_required

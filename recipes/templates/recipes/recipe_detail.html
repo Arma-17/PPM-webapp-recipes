@@ -97,6 +97,57 @@
         </div>
       </div>
     </div>
+
+
+    <!-- Recipe Details -->
+    <div class="container" style="margin-top: 50px;">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="mb-4">Ingredients</h1>
+          <ul class="ingredient-list">
+            {% for ingredient in ingredients %}
+                <p>Ingredient: {{ ingredient.0 }} | Quantity: {{ ingredient.1 }} | Unit: {{ ingredient.2 }}</p>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 50px;">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="mb-4">Steps</h1>
+          <div class="steps-list">
+            {% for step in steps %}
+                <div>
+                    <p><strong>Step Description:</strong> {{ step.0 }}</p>
+                    <p><strong>Image:</strong> <img src="{{ step.1 }}" alt="Step Image" /></p>
+                </div>
+            {% endfor %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 50px;">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="mb-4">Servings</h1>
+          <p>{{ object.servings }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="margin-top: 50px;">
+      <div class="row">
+        <div class="col-12">
+          <h1 class="mb-4">Categories</h1>
+          <p>{{ object.categories }}</p>
+        </div>
+      </div>
+    </div>
+
     
 
 
