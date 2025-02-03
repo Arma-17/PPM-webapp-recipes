@@ -32,7 +32,7 @@
             <div class="single-best-receipe-area p-3 border flex-grow-1">
             <div class="ratio ratio-1x1"> <!-- Set fixed aspect ratio of 1:1 (square) -->
                 {% if recipe.img %}
-                <img src="{{ recipe.img.url }}" class="img-fluid object-fit-cover" alt="{{ recipe.title }}">
+                <img src="{{ recipe.img.url }}" class="img-fluid object-fit-cover rounded" alt="{{ recipe.title }}">
                 {% else %}
                 <img src="/media/images/no_image_available.png" class="img-fluid object-fit-cover" alt="{{ recipe.title }}">
                 {% endif %}

@@ -1,4 +1,9 @@
 /* :: 8.0 Best Receipe Area */
+
+body{
+  background-color: #ffe7b2;
+}
+
 .best-receipe-area {
   position: relative;
   z-index: 1;
