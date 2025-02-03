@@ -167,16 +167,19 @@ class RecipeUpdateView(RecipeBaseView, UpdateView):
 
     def test_func(self):
         recipe = self.get_object()
-        return self.request.user == recipe.author
+        # Allow deletion if the user is the author or an admin
+        return self.request.user == recipe.author or self.request.user.is_superuser
 
 
-class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin,DeleteView):
+class RecipeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = models.Recipe
     success_url = reverse_lazy('user-recipes')
 
     def test_func(self):
         recipe = self.get_object()
-        return self.request.user == recipe.author
+        # Allow deletion if the user is the author or an admin
+        return self.request.user == recipe.author or self.request.user.is_superuser
+
 
 
 def about(request):
