@@ -10,6 +10,14 @@ body{
   overflow-x: hidden;
 }
 
+.custom-navbar {
+  background-color: #c0e794 !important;
+  border-bottom: 1.5px solid #e45959 !important;
+}
+
+.bold{
+  font-weight: bold;
+}
 
 .best-receipe-area {
   position: relative;
