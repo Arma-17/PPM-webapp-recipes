@@ -4,6 +4,16 @@ body{
   background-color: #ffe7b2;
 }
 
+.favorite-btn i {
+  color: #d3d3d3; /* Grey by default */
+  transition: color 0.3s ease;
+}
+
+.favorite-btn.active i {
+  color: #f3f708; /* Yellow when active */
+}
+
+
 .best-receipe-area {
   position: relative;
   z-index: 1;

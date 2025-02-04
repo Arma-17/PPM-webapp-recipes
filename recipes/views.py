@@ -176,20 +176,23 @@ def about(request):
 
 @login_required
 def toggle_favorite(request, recipe_id):
-    recipe = models.Recipe.objects.get(id=recipe_id)
-    favorite, created = models.Favorite.objects.get_or_create(user=request.user, recipe=recipe)
-    if created:
-        action = 'add'
-    else:
+    # Get the recipe by id
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+
+    # Check if the recipe is already in the user's favorites
+    favorite = Favorite.objects.filter(user=request.user, recipe=recipe).first()
+
+    if favorite:
+        # If the recipe is already a favorite, remove it
         favorite.delete()
         action = 'remove'
-        
-    response_data = {
-        'action': action
-    }
-    
-    return JsonResponse(response_data)
+    else:
+        # If the recipe is not a favorite, add it
+        Favorite.objects.create(user=request.user, recipe=recipe)
+        action = 'add'
 
+    # Return the action result (add or remove)
+    return JsonResponse({'action': action})
 
 def search_results(request):
     query = request.GET.get('query')
